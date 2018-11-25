@@ -1,0 +1,56 @@
+list = []
+keyword_list = ["情報","事業","IR","採用","グループ","企業","ニュース","会社","サービス","CSR"]
+information = []
+business = []
+IR = []
+Adopt = []
+group = []
+kigyou = []
+news = []
+kaisha = []
+service = []
+CSR = []
+LIST_LIST = [information, business, IR, Adopt, group, kigyou, news, kaisha, service, CSR]
+
+# 形態素分析をリスト化する関数
+def list_dictionary(m_article):
+    for row in m_article.split("\n"):
+        tag = row.split('\t')[0]
+        if tag =="EOS":
+            break
+        else:
+            pos = row.split("\t")[1]
+            slice = pos[:2]
+            d = {slice : tag}
+            list.append(d)
+            counter(list)
+
+# 形態素分析を実行する関数
+def Morphological(Sentence_list):
+    for sentence in Sentence_list:
+        m = MeCab.Tagger ()
+        m_article = m.parse (sentence)
+        list_dictionary(m_article)
+
+# 名詞の数をカウントする関数
+def counter(list):
+    noun_list = [dic["名詞"] for dic in list if sorted(dic.keys())[0] == "名詞" and len(dic["名詞"]) > 1]
+    counter = Counter(noun_list)
+    for keyword in keyword_list:
+        for List in LIST_LIST:
+            if counter.keys() == keyword:
+                List.append(int(counter[keyword]))
+            else:
+                List.append(0)
+
+df2 = pd.DataFrame.from_dict({"information": information, "business": business, "IR": IR, "Adopt": Adopt, 
+                              "group": group, "kigyou": kigyou, "news": news, "kaisha": kaisha, "service": service, 
+                              "CSR": CSR})
+            
+        
+# まとめ
+def main():
+    scraping(url_list)
+    df2
+
+main()
